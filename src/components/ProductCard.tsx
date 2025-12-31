@@ -2,8 +2,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
+  id: number;
   name: string;
   description: string;
   price: number;
@@ -14,8 +17,18 @@ interface ProductCardProps {
   isNew?: boolean;
 }
 
-const ProductCard = ({ name, description, price, oldPrice, image, category, inStock, isNew }: ProductCardProps) => {
+const ProductCard = ({ id, name, description, price, oldPrice, image, category, inStock, isNew }: ProductCardProps) => {
   const discount = oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+  const { addItem, openCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = () => {
+    addItem({ id, name, price, image });
+    toast({
+      title: "Товар добавлен в корзину",
+      description: name,
+    });
+  };
 
   return (
     <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
@@ -60,7 +73,7 @@ const ProductCard = ({ name, description, price, oldPrice, image, category, inSt
       </CardContent>
 
       <CardFooter className="flex gap-2">
-        <Button className="flex-1" disabled={!inStock}>
+        <Button className="flex-1" disabled={!inStock} onClick={handleAddToCart}>
           <Icon name="ShoppingCart" size={18} className="mr-2" />
           В корзину
         </Button>

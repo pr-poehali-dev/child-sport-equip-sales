@@ -7,10 +7,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import Icon from "@/components/ui/icon";
 import { useState } from "react";
 import ProductCard from "@/components/ProductCard";
+import Cart from "@/components/Cart";
+import { useCart } from "@/contexts/CartContext";
 
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const { totalItems, openCart } = useCart();
 
   const categories = [
     {
@@ -178,10 +181,20 @@ const Index = () => {
               <a href="#certificates" className="text-foreground hover:text-primary transition-colors">Сертификаты</a>
               <a href="#contact" className="text-foreground hover:text-primary transition-colors">Контакты</a>
             </nav>
-            <Button>
-              <Icon name="Phone" size={18} className="mr-2" />
-              Позвонить
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" className="relative" onClick={openCart}>
+                <Icon name="ShoppingCart" size={20} />
+                {totalItems > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                    {totalItems}
+                  </Badge>
+                )}
+              </Button>
+              <Button>
+                <Icon name="Phone" size={18} className="mr-2" />
+                Позвонить
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -519,6 +532,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <Cart />
 
       <footer className="bg-gray-900 text-white py-12 px-4">
         <div className="container mx-auto">
