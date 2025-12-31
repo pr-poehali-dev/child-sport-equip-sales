@@ -6,9 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Icon from "@/components/ui/icon";
 import { useState } from "react";
+import ProductCard from "@/components/ProductCard";
 
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const categories = [
     {
@@ -80,6 +82,86 @@ const Index = () => {
       description: "Официальная гарантия производителя"
     }
   ];
+
+  const products = [
+    {
+      id: 1,
+      name: "Детская горка \"Радуга\"",
+      description: "Яркая пластиковая горка с безопасным спуском для детей 3-7 лет",
+      price: 45000,
+      oldPrice: 52000,
+      image: "https://cdn.poehali.dev/projects/5a478b2f-f99c-4972-9db1-fe9f62e9c033/files/ad3e6f88-16e7-40e8-b9f4-e18248b7d1d7.jpg",
+      category: "Игровые комплексы",
+      categoryId: "playgrounds",
+      inStock: true,
+      isNew: true
+    },
+    {
+      id: 2,
+      name: "Качели двойные \"Веселье\"",
+      description: "Металлические качели с двумя сиденьями и защитными цепями",
+      price: 28000,
+      image: "https://cdn.poehali.dev/projects/5a478b2f-f99c-4972-9db1-fe9f62e9c033/files/f24be83b-915a-4402-801f-bfe4ac44c533.jpg",
+      category: "Игровые комплексы",
+      categoryId: "playgrounds",
+      inStock: true,
+      isNew: false
+    },
+    {
+      id: 3,
+      name: "Игровой комплекс \"Замок\"",
+      description: "Многофункциональный комплекс: горка, лестница, домик",
+      price: 89000,
+      oldPrice: 105000,
+      image: "https://cdn.poehali.dev/projects/5a478b2f-f99c-4972-9db1-fe9f62e9c033/files/7996cd60-ebb7-44e4-a98d-e7ac656ef35d.jpg",
+      category: "Игровые комплексы",
+      categoryId: "playgrounds",
+      inStock: true,
+      isNew: true
+    },
+    {
+      id: 4,
+      name: "Баскетбольная стойка регулируемая",
+      description: "Профессиональная стойка с регулировкой высоты от 2.3 до 3.05 м",
+      price: 32000,
+      image: "https://cdn.poehali.dev/projects/5a478b2f-f99c-4972-9db1-fe9f62e9c033/files/67469857-88f7-49db-b6a8-69c4aecd4ef1.jpg",
+      category: "Спортивное оборудование",
+      categoryId: "sports",
+      inStock: true,
+      isNew: false
+    },
+    {
+      id: 5,
+      name: "Турник-брусья 3 в 1",
+      description: "Спортивный комплекс: турник, брусья, пресс. Металл с порошковым покрытием",
+      price: 24000,
+      oldPrice: 28000,
+      image: "https://cdn.poehali.dev/projects/5a478b2f-f99c-4972-9db1-fe9f62e9c033/files/dce05ba7-f8d3-4e98-838a-cf4ef4f72380.jpg",
+      category: "Спортивное оборудование",
+      categoryId: "sports",
+      inStock: true,
+      isNew: false
+    },
+    {
+      id: 6,
+      name: "Батут с защитной сеткой 3м",
+      description: "Профессиональный батут диаметром 3м с усиленной сеткой безопасности",
+      price: 35000,
+      image: "https://cdn.poehali.dev/projects/5a478b2f-f99c-4972-9db1-fe9f62e9c033/files/0c8060d4-6e6c-4d4f-8792-16dfaf91c2f6.jpg",
+      category: "Спортивное оборудование",
+      categoryId: "sports",
+      inStock: false,
+      isNew: true
+    }
+  ];
+
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = !selectedCategory || product.categoryId === selectedCategory;
+    const matchesSearch = !searchQuery || 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
@@ -165,12 +247,14 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">Выберите интересующую категорию оборудования</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {categories.map((category) => (
               <Card 
                 key={category.id}
-                className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
-                onClick={() => setSelectedCategory(category.id)}
+                className={`cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-2 ${
+                  selectedCategory === category.id ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
               >
                 {category.image && (
                   <div className="h-48 overflow-hidden rounded-t-lg">
@@ -192,13 +276,60 @@ const Index = () => {
                 </CardHeader>
                 <CardContent>
                   <Button variant="outline" className="w-full">
-                    Смотреть товары
+                    {selectedCategory === category.id ? 'Показать все' : 'Смотреть товары'}
                     <Icon name="ArrowRight" size={16} className="ml-2" />
                   </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
+
+          <div className="mb-8">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              <div className="flex-1 max-w-xl">
+                <div className="relative">
+                  <Icon name="Search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input 
+                    placeholder="Поиск товаров..." 
+                    className="pl-10"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {selectedCategory && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setSelectedCategory(null)}
+                  >
+                    Сбросить фильтр
+                    <Icon name="X" size={16} className="ml-2" />
+                  </Button>
+                )}
+                <Badge variant="secondary" className="px-4 py-2">
+                  Найдено: {filteredProducts.length}
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))}
+          </div>
+
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-12">
+              <Icon name="PackageOpen" size={64} className="mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-2xl font-bold mb-2">Товары не найдены</h3>
+              <p className="text-muted-foreground mb-4">Попробуйте изменить параметры поиска</p>
+              <Button onClick={() => { setSelectedCategory(null); setSearchQuery(""); }}>
+                Сбросить фильтры
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
